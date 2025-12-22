@@ -1,0 +1,23 @@
+{
+  "name": "gofundme-scrape",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf output",
+    "scrape": "tsx index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.956.0",
+    "luxon": "^3.7.2",
+    "puppeteer": "^24.34.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.7.1"
+  }
+}
