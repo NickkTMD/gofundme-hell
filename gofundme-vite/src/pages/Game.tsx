@@ -3,7 +3,35 @@ import { getShuffledCampaigns, getPlaceholderImage, type Campaign } from '../dat
 import CampaignCard from '../components/game/CampaignCard'
 import ActionButtons from '../components/game/ActionButtons'
 import NavBar from '../components/NavBar'
-import { CheckCircle, XCircle } from 'lucide-react'
+import { CheckCircle, XCircle, Trophy, RotateCcw, Share2 } from 'lucide-react'
+const TOTAL_ROUNDS = 10
+
+const medicalDebtComparison = {
+  us: {
+    amount: 220_000_000_000,
+    flag: '🇺🇸',
+  },
+  otherCountries: [
+    { name: 'United Kingdom', flag: '🇬🇧' },
+    { name: 'Canada', flag: '🇨🇦' },
+    { name: 'France', flag: '🇫🇷' },
+    { name: 'Germany', flag: '🇩🇪' },
+    { name: 'Australia', flag: '🇦🇺' },
+    { name: 'Norway', flag: '🇳🇴' },
+    { name: 'Sweden', flag: '🇸🇪' },
+    { name: 'Denmark', flag: '🇩🇰' },
+    { name: 'Finland', flag: '🇫🇮' },
+    { name: 'Spain', flag: '🇪🇸' },
+    { name: 'Italy', flag: '🇮🇹' },
+    { name: 'Portugal', flag: '🇵🇹' },
+    { name: 'Netherlands', flag: '🇳🇱' },
+    { name: 'Belgium', flag: '🇧🇪' },
+    { name: 'Austria', flag: '🇦🇹' },
+    { name: 'Switzerland', flag: '🇨🇭' },
+    { name: 'Japan', flag: '🇯🇵' },
+    { name: 'South Korea', flag: '🇰🇷' },
+  ],
+}
 
 // Import america images for background
 import img1 from '../assets/america/1.jpg'
@@ -44,7 +72,7 @@ interface GameState {
   campaigns: Campaign[]
   currentIndex: number
   totalSeen: number
-  phase: 'guessing' | 'showing_result' | 'animating'
+  phase: 'guessing' | 'showing_result' | 'animating' | 'game_over'
   userGuess: boolean | null
   isCorrect: boolean | null
   correctCount: number
@@ -80,6 +108,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         phase: 'animating',
       }
     case 'NEXT_CAMPAIGN': {
+      // Check if game is over (completed all rounds)
+      if (state.totalSeen >= TOTAL_ROUNDS) {
+        return {
+          ...state,
+          phase: 'game_over',
+        }
+      }
       const nextIndex = state.currentIndex + 1
       const newTotalSeen = state.totalSeen + 1
       // Loop back and reshuffle when we reach the end
@@ -163,16 +198,21 @@ export default function Game() {
   const touchStartX = useRef<number | null>(null)
   const SWIPE_THRESHOLD = 100
 
-  // Animated net worths - start 10% lower, only go up
-  const [netWorths, setNetWorths] = useState(entrepreneurs.map(e => e.netWorth * 0.9))
+  // Animated net worths - start 1% lower, only go up
+  const [netWorths, setNetWorths] = useState(entrepreneurs.map(e => e.netWorth * 0.99))
+  const [usDebt, setUsDebt] = useState(medicalDebtComparison.us.amount * 0.99)
 
   useEffect(() => {
     const interval = setInterval(() => {
       setNetWorths(prev => prev.map((worth) => {
-        // Random increase between 0.05% and 0.2%
-        const change = worth * (Math.random() * 0.0015 + 0.0005)
+        // Random increase between 0.001% and 0.005%
+        const change = worth * (Math.random() * 0.00004 + 0.00001)
         return worth + change
       }))
+      setUsDebt(prev => {
+        const change = prev * (Math.random() * 0.00004 + 0.00001)
+        return prev + change
+      })
     }, 100)
     return () => clearInterval(interval)
   }, [])
@@ -314,23 +354,68 @@ export default function Game() {
         </div>
       </div>
 
-      {/* Top Entrepreneurs - desktop only, fixed right */}
+      {/* Top Entrepreneurs & Medical Debt - desktop only, fixed right */}
       <div className="hidden md:flex fixed top-1/2 -translate-y-1/2 right-6 z-20 flex-col gap-2">
-        {entrepreneurs.map((person, i) => (
-          <div key={person.name} className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-3">
-            <img
-              src={person.img}
-              alt={person.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
-            <div className="text-left">
-              <div className="text-white text-base font-medium">{person.name}</div>
-              <div className="text-green-400 text-base font-mono">
-                ${(netWorths[i] / 1_000_000_000).toFixed(1)}B
+        {(() => {
+          const items = [
+            ...entrepreneurs.map((person, i) => ({
+              type: 'person' as const,
+              name: person.name,
+              img: person.img,
+              value: netWorths[i],
+            })),
+            {
+              type: 'usDebt' as const,
+              name: 'Total US Medical Debt',
+              value: usDebt,
+            },
+          ].sort((a, b) => b.value - a.value)
+
+          return items.map((item) =>
+            item.type === 'person' ? (
+              <div key={item.name} className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-3">
+                <img
+                  src={item.img}
+                  alt={item.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div className="text-left">
+                  <div className="text-white text-base font-medium">{item.name}</div>
+                  <div className="text-green-400 text-base font-mono">
+                    ${(item.value / 1_000_000_000).toFixed(1)}B
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div key="usDebt" className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-900 flex items-center justify-center text-3xl">
+                  {medicalDebtComparison.us.flag}
+                </div>
+                <div className="text-left">
+                  <div className="text-white text-base font-medium">{item.name}</div>
+                  <div className="text-red-400 text-base font-mono">
+                    ${(item.value / 1_000_000_000).toFixed(1)}B
+                  </div>
+                </div>
+              </div>
+            )
+          )
+        })()}
+
+        {/* 18 Countries Combined */}
+        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-3">
+          <div className="flex flex-wrap w-12 h-12 content-center gap-0.5">
+            {medicalDebtComparison.otherCountries.map((country) => (
+              <span key={country.name} className="text-[10px] leading-none" title={country.name}>
+                {country.flag}
+              </span>
+            ))}
           </div>
-        ))}
+          <div className="text-left">
+            <div className="text-white text-xs font-medium max-w-[160px]">18 Developed Countries' Combined Medical Debt</div>
+            <div className="text-green-400 text-base font-mono">$0.0B</div>
+          </div>
+        </div>
       </div>
 
       {/* Card container */}
@@ -395,6 +480,57 @@ export default function Game() {
           <div className="text-xs text-gray-400 uppercase tracking-wide">Total Raised</div>
         </div>
       </div>
+
+      {/* Game Over Modal */}
+      {state.phase === 'game_over' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-gray-900 rounded-3xl p-8 mx-4 max-w-md w-full text-center shadow-2xl border border-gray-700">
+            <Trophy className="w-20 h-20 text-yellow-400 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-white mb-2">Game Over!</h2>
+            <p className="text-gray-400 mb-6">You completed {TOTAL_ROUNDS} rounds</p>
+
+            <div className="flex justify-center gap-6 mb-8">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-green-400">{state.correctCount}</div>
+                <div className="text-sm text-gray-400">Correct</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-red-400">{state.incorrectCount}</div>
+                <div className="text-sm text-gray-400">Wrong</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-white">{formatRaised(state.totalRaised)}</div>
+                <div className="text-sm text-gray-400">Raised</div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => dispatch({ type: 'RESET_GAME' })}
+                className="flex items-center justify-center gap-2 w-full py-3 px-6 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition-colors"
+              >
+                <RotateCcw className="w-5 h-5" />
+                Play Again
+              </button>
+              <button
+                onClick={() => {
+                  const text = `I scored ${state.correctCount}/${TOTAL_ROUNDS} on GoFundMe Hell! Can you do better?`
+                  if (navigator.share) {
+                    navigator.share({ text, url: window.location.href })
+                  } else {
+                    navigator.clipboard.writeText(text + ' ' + window.location.href)
+                    alert('Copied to clipboard!')
+                  }
+                }}
+                className="flex items-center justify-center gap-2 w-full py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-colors"
+              >
+                <Share2 className="w-5 h-5" />
+                Share Score
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       </div>
   )

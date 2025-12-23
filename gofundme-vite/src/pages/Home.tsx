@@ -65,7 +65,7 @@ export default function Home() {
         }}
       ></div>
       {/* Dark overlay - center only */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0.7)_25%,transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.85)_30%,transparent_55%)]"></div>
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
@@ -73,18 +73,18 @@ export default function Home() {
           {/* Eagle and flag header */}
           <div className="text-6xl mb-4">🦅🇺🇸🦅</div>
 
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
             Was It <span className="text-yellow-400">Funded</span>?
           </h1>
 
-          <p className="text-xl text-red-200 mb-2 font-semibold italic drop-shadow-lg">
-            The American Dream in Action
-          </p>
-
-          <p className="text-lg text-blue-100 mb-8 drop-shadow-lg">
-            Test your entrepreneurial instincts! Can you guess which GoFundMe campaigns
-            achieved the American Dream and reached their funding goals?
-          </p>
+          <div className="text-lg text-white mb-8 drop-shadow-lg text-left">
+            <p className="mb-4">
+              In most developed countries, when a child gets sick, the country does something insane, like give the child free medical care.
+            </p>
+            <p>
+              In America, we do things better — we let the grieving, broke families compete for money on GoFundMe to try to avoid going hundreds of thousands of dollars into debt treating their child's cancer!
+            </p>
+          </div>
 
           <Link
             to="/game"
@@ -96,10 +96,8 @@ export default function Home() {
             PLAY NOW
           </Link>
 
-          <p className="mt-8 text-blue-200 text-sm flex items-center justify-center gap-2 drop-shadow-lg">
-            <span>🎆</span>
-            Celebrating American entrepreneurship, one campaign at a time
-            <span>🎆</span>
+          <p className="mt-8 text-white text-sm drop-shadow-lg">
+            <span className="font-semibold">Hint:</span> Cuter children tend to reach their medical funding goals more often. But maybe don't think about that too hard.
           </p>
 
           <div className="mt-4 text-4xl">
