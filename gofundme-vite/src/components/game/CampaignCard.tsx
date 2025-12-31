@@ -47,7 +47,9 @@ export default function CampaignCard({
       {/* Content Section - overlaid on mobile, separate on desktop */}
       <div className="relative mt-auto p-4 md:p-6 md:bg-gradient-to-t md:from-gray-900 md:to-gray-900/95">
         <h2 className="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2">
-          {campaign.name} <span className="font-normal text-gray-400">{number}</span>
+          {campaign.name}
+          {campaign.age !== undefined && `, ${campaign.age}`}
+          <span className="font-normal text-gray-400"> {number}</span>
         </h2>
 
         <p className="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-2 mb-1 md:mb-2">
