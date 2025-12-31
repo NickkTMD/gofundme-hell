@@ -1,4 +1,5 @@
 import type { Campaign } from '../../../data/campaigns'
+import gofundmeLogo from '../../../assets/GoFundMe_Logo.svg'
 
 function formatGoal(goal: number): string {
   return goal.toLocaleString('en-US', {
@@ -34,8 +35,9 @@ export default function GuessingContent({
         {capitalizeFirstLetter(campaign.description)}
       </p>
 
-      <p className="text-gray-400 text-base md:text-lg">
+      <p className="text-gray-400 text-base md:text-lg flex items-center gap-2">
         Goal: <span className="text-white font-semibold">{formatGoal(campaign.goal)}</span>
+        <img src={gofundmeLogo} alt="GoFundMe" className="h-4 md:h-5" />
       </p>
 
       {/* Image Indicators - only show if multiple images */}

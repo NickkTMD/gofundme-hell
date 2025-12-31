@@ -1,7 +1,6 @@
 import type { Campaign } from '../../data/campaigns'
 import { useState } from 'react'
 import { getPlaceholderImage } from '../../data/campaigns'
-import gofundmeLogo from '../../assets/GoFundMe_Logo.svg'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ContentSection from './CampaignCard/ContentSection'
 
@@ -45,7 +44,7 @@ export default function CampaignCard({
         <img
           src={images[currentImageIndex]}
           alt={`${campaign.name} - Image ${currentImageIndex + 1}`}
-          className="absolute inset-0 w-full h-full object-contain md:object-cover"
+          className="absolute inset-0 w-full h-full object-contain scale-125"
         />
         {/* Gradient fade to black on mobile, to gray on desktop */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 via-30% to-transparent md:from-gray-900 md:via-transparent" />
@@ -88,12 +87,6 @@ export default function CampaignCard({
           </>
         )}
 
-        {/* GoFundMe Logo */}
-        <img
-          src={gofundmeLogo}
-          alt="GoFundMe"
-          className="absolute top-4 right-4 w-28 md:w-32 drop-shadow-lg z-20"
-        />
       </div>
 
       {/* Content Section - always rendered, morphs between phases */}

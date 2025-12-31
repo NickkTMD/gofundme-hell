@@ -1,4 +1,5 @@
 import campaignsData from '../../campaigns_metadata.json'
+import { TOTAL_ROUNDS, FUNDED_COUNT } from '../config/gameConfig'
 
 export interface Campaign {
   id: number
@@ -66,10 +67,10 @@ export function getBalancedCampaigns(): Campaign[] {
   const shuffledFunded = [...funded].sort(() => Math.random() - 0.5)
   const shuffledUnfunded = [...unfunded].sort(() => Math.random() - 0.5)
 
-  // Pick 2 funded and 6 unfunded
+  // Pick funded and unfunded based on config
   const selected = [
-    ...shuffledFunded.slice(0, 2),
-    ...shuffledUnfunded.slice(0, 6)
+    ...shuffledFunded.slice(0, FUNDED_COUNT),
+    ...shuffledUnfunded.slice(0, TOTAL_ROUNDS - FUNDED_COUNT)
   ]
 
   // Shuffle the combined array so they're not all funded first

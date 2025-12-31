@@ -69,7 +69,7 @@ export default function Home() {
   const images = useMemo(() => getRandomImages(12), []);
 
   return (
-    <div className="h-screen relative overflow-hidden">
+    <div className="h-dvh relative overflow-hidden">
       {/* Collage background */}
       <div className="absolute inset-0 grid grid-cols-3 grid-rows-4 md:grid-cols-4 md:grid-rows-3 gap-1">
         {images.map((img, i) => (
@@ -93,35 +93,39 @@ export default function Home() {
         className="absolute inset-0 backdrop-blur-lg md:hidden"
         style={{
           maskImage:
-            "radial-gradient(circle, black 0%, black 40%, transparent 75%)",
+            "radial-gradient(circle, black 0%, black 60%, transparent 100%)",
           WebkitMaskImage:
-            "radial-gradient(circle, black 0%, black 40%, transparent 75%)",
+            "radial-gradient(circle, black 0%, black 60%, transparent 100%)",
         }}
       ></div>
       {/* Dark overlay - center only */}
       <div className="absolute inset-0 hidden md:block bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.85)_30%,transparent_55%)]"></div>
-      <div className="absolute inset-0 md:hidden bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_45%,transparent_80%)]"></div>
+      <div className="absolute inset-0 md:hidden bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_60%,transparent_100%)]"></div>
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
+      <div className="relative z-10 h-full flex flex-col items-center justify-start px-6 pt-1 md:pt-2 overflow-auto">
         <div className="text-center max-w-2xl">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg text-balance">
-            🇺🇸 Heal Or No Heal 🇺🇸
-          </h1>
+          <div className="mb-0 flex justify-center">
+            <img
+              src="/logo.png"
+              alt="Heal Or No Heal"
+              className="w-full max-w-xs md:max-w-md h-auto drop-shadow-lg"
+            />
+          </div>
 
-          <div className="text-lg text-white mb-8 drop-shadow-lg text-left">
-            <p className="mb-4">
+          <div className="text-lg text-white mb-3 drop-shadow-lg text-left">
+            <p className="mb-2">
               In other developed countries, when a child gets sick, the country
-              does something insane, like give the child{" "}
+              does something insane - they give them{" "}
               <strong>free medical care</strong>.
             </p>
-            <p className="mb-4">
-              In America, we do things better. We put the{" "}
+            <p className="mb-2">
+              Thankfully, in America we do things better. We put the{" "}
               <strong>grieving, broke families</strong> hundreds of thousands of
               dollars into <strong>medical debt</strong>, then let them compete
               for money on <strong>GoFundMe</strong>!
             </p>
-            <p>
+            <p className="mb-0">
               <strong>This is of course fucked up</strong> - why are we not also
               gamifying it?
             </p>
@@ -131,19 +135,18 @@ export default function Home() {
             to="/game"
             className="inline-flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-700
                        text-white text-xl font-bold rounded-xl transition-all transform
-                       hover:scale-105 shadow-lg border-4 border-white"
+                       hover:scale-105 shadow-lg border-4 border-white my-2"
           >
             <Play className="w-6 h-6" fill="currentColor" />
             PLAY NOW
           </Link>
 
-          <p className="mt-8 text-white text-sm drop-shadow-lg">
-            <span className="font-semibold">Hint:</span> Cuter children tend to
-            reach their medical funding goals more often. But maybe don't think
-            about that too hard.
-          </p>
+          {/* <p className="mt-3 text-white text-sm drop-shadow-lg text-balance">
+            <span className="font-semibold">Hint!</span> Cuter and whiter children tend to
+            reach their medical funding goals more often.
+          </p> */}
 
-          <div className="mt-4 text-4xl">⭐⭐⭐⭐⭐</div>
+          {/* <div className="mt-0.5 text-2xl">⭐⭐⭐⭐⭐</div> */}
         </div>
       </div>
     </div>

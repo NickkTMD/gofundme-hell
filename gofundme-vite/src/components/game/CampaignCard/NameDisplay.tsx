@@ -13,7 +13,7 @@ export default function NameDisplay({ name, age }: NameDisplayProps) {
     <h2 className="text-2xl md:text-3xl font-bold text-white mb-0.5">
       {getFirstName(name)}
       {age !== undefined && (
-        <span className="font-normal text-gray-400"> {age}</span>
+        <span className="font-normal text-gray-400"> {age === 0 ? "6 months" : age}</span>
       )}
     </h2>
   )

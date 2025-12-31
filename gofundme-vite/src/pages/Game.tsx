@@ -7,9 +7,16 @@ import {
 import CampaignCard from "../components/game/CampaignCard";
 import ActionButtons from "../components/game/ActionButtons";
 import NavBar from "../components/NavBar";
-import { Trophy, RotateCcw, Share2, Home } from "lucide-react";
+import {
+  Trophy,
+  RotateCcw,
+  Share2,
+  Home,
+  MoreVertical,
+  ExternalLink,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-const TOTAL_ROUNDS = 8;
+import { TOTAL_ROUNDS } from "../config/gameConfig";
 
 const medicalDebtComparison = {
   us: {
@@ -124,9 +131,11 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       const currentCampaign = state.campaigns[state.currentIndex];
       const isCorrect = action.guess === currentCampaign.fundedSuccessfully;
       // Calculate debt: the gap between goal and raised (only if not funded)
-      const debt = (currentCampaign.raised !== undefined && currentCampaign.raised < currentCampaign.goal)
-        ? currentCampaign.goal - currentCampaign.raised
-        : 0;
+      const debt =
+        currentCampaign.raised !== undefined &&
+        currentCampaign.raised < currentCampaign.goal
+          ? currentCampaign.goal - currentCampaign.raised
+          : 0;
       return {
         ...state,
         phase: "showing_result",
@@ -218,7 +227,6 @@ function formatRaised(amount: number): string {
   return `$${amount}`;
 }
 
-
 const entrepreneurs = [
   {
     name: "Elon Musk",
@@ -250,6 +258,12 @@ const entrepreneurs = [
 export default function Game() {
   const [state, dispatch] = useReducer(gameReducer, null, getInitialState);
   const bgImages = useMemo(() => getRandomImages(12), []);
+
+  // Dropdown menu state
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Instructions screen state
+  const [showInstructions, setShowInstructions] = useState(true);
 
   // Swipe handling - declare before useEffects that use it
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -360,7 +374,7 @@ export default function Game() {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center md:px-4 md:py-8 relative overflow-hidden">
+    <div className="h-dvh flex flex-col items-center justify-center md:px-4 md:py-8 relative overflow-hidden">
       {/* Collage background - desktop only */}
       <div className="absolute inset-0 hidden md:grid grid-cols-4 grid-rows-3 gap-1">
         {bgImages.map((img, i) => (
@@ -394,30 +408,83 @@ export default function Game() {
       <NavBar />
 
       {/* Scoreboard - mobile only, at top */}
-      <div className="flex md:hidden z-10 gap-2 mt-4 px-4">
-        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center flex-1">
-          <div className="text-2xl font-bold text-white">
-            {state.totalSeen}/8
+      <div className="flex md:hidden z-30 mt-4 w-full px-4 justify-between items-center">
+        {/* Flag */}
+        <div className="w-10 flex justify-center">
+          <span className="text-2xl">🇺🇸</span>
+        </div>
+
+        {/* Stats */}
+        <div className="flex gap-4">
+          <div className="bg-black/60 backdrop-blur-sm rounded-xl py-2 text-center w-16">
+            <div className="text-2xl font-bold text-white">
+              {state.totalSeen}/8
+            </div>
+            <div className="text-xs text-gray-400 uppercase tracking-wide">
+              Round
+            </div>
           </div>
-          <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Round
+          <div className="bg-black/60 backdrop-blur-sm rounded-xl py-2 text-center w-16">
+            <div className="text-2xl font-bold text-white">
+              {state.correctCount || 0}
+            </div>
+            <div className="text-xs text-gray-400 uppercase tracking-wide">
+              Score
+            </div>
+          </div>
+          <div className="bg-black/60 backdrop-blur-sm rounded-xl py-2 text-center w-16">
+            <div className="text-2xl font-bold text-white">
+              {formatRaised(state.totalDebt || 0)}
+            </div>
+            <div className="text-xs text-gray-400 uppercase tracking-wide">
+              Debt
+            </div>
           </div>
         </div>
-        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center flex-1">
-          <div className="text-2xl font-bold text-white">
-            {state.correctCount || 0}
-          </div>
-          <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Score
-          </div>
-        </div>
-        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center flex-1">
-          <div className="text-2xl font-bold text-white">
-            {formatRaised(state.totalDebt || 0)}
-          </div>
-          <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Debt
-          </div>
+
+        {/* More options */}
+        <div className="relative w-10 flex justify-center z-50">
+          <button
+            className="text-white/60 hover:text-white p-1"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <MoreVertical className="w-6 h-6" />
+          </button>
+          {menuOpen && (
+            <div className="fixed inset-0 z-[100]">
+              <div
+                className="absolute inset-0 bg-black/50"
+                onClick={() => setMenuOpen(false)}
+              />
+              <div className="absolute top-16 right-4 bg-gray-900 border border-gray-700 rounded-xl shadow-xl overflow-hidden w-56">
+                <a
+                  href="/"
+                  className="block px-4 py-3 text-white hover:bg-gray-800 transition-colors"
+                >
+                  <span className="flex items-center gap-3">
+                    <Home className="w-5 h-5" />
+                    Back to Home
+                  </span>
+                </a>
+                {!showInstructions && (
+                  <a
+                    href={
+                      currentCampaign.url ||
+                      `https://www.gofundme.com/f/${currentCampaign.slug}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-3 text-white hover:bg-gray-800 transition-colors border-t border-gray-700"
+                  >
+                    <span className="flex items-center gap-3">
+                      <ExternalLink className="w-5 h-5" />
+                      View on GoFundMe
+                    </span>
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -529,37 +596,88 @@ export default function Game() {
         </div>
       </div>
 
-      {/* Card container */}
-      <div className="relative w-full max-w-xl flex-1 min-h-0 flex justify-center z-10">
-        <div
-          className="relative w-full h-full"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          style={getSwipeStyle()}
-        >
-          <CampaignCard
-            key={currentCampaign.id}
-            campaign={currentCampaign}
-            animationClass={getAnimationClass()}
-            phase={state.phase === "showing_result" ? "result" : "guessing"}
-            isCorrect={state.isCorrect ?? undefined}
-          />
-        </div>
-      </div>
+      {showInstructions ? (
+        <>
+          {/* Instructions content - in place of card */}
+          <div className="relative w-full max-w-md flex-1 min-h-0 flex flex-col justify-center items-center z-10 px-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-red-500 mb-6 text-center">
+              🇺🇸 How To Play 🇺🇸
+            </h2>
 
-      {/* Action buttons */}
-      <div className="z-10 flex flex-col items-center mt-4 md:mt-6 pb-6 md:pb-0">
-        <span className={`text-white/80 text-sm font-medium mb-0 ${state.phase === "guessing" ? "" : "invisible"}`}>
-          Did it get funded?
-        </span>
-        <ActionButtons
-          onGuess={handleGuess}
-          onNext={handleNext}
-          showNext={state.phase === "showing_result"}
-          disabled={state.phase !== "guessing"}
-        />
-      </div>
+            <div className="text-center text-white/90 space-y-4 mb-8 text-sm md:text-base">
+              <p>
+                You will be shown{" "}
+                <strong>real GoFundMe campaigns</strong>{" "}
+                for American children/families who couldn't afford their medical
+                treatment.
+              </p>
+              <p>
+                Your job: guess whether each campaign{" "}
+                <strong className="text-green-400">
+                  reached its funding goal
+                </strong>{" "}
+                or <strong className="text-red-400">fell short</strong>.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowInstructions(false)}
+              className="w-full py-4 px-6 bg-red-600 hover:bg-red-500 text-white text-xl font-bold rounded-xl transition-colors border-4 border-white"
+            >
+              I'm ready
+            </button>
+
+            <p className="mt-6 text-white/80 text-sm text-balance text-center">
+              <span className="font-semibold">Hint!</span> Cuter and whiter
+              children tend to reach their medical funding goals more often.
+            </p>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Card container */}
+          <div className="relative w-full max-w-xl flex-1 min-h-0 flex justify-center z-10">
+            <div
+              className="relative w-full h-full touch-pan-x"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={getSwipeStyle()}
+            >
+              <CampaignCard
+                key={currentCampaign.id}
+                campaign={currentCampaign}
+                animationClass={getAnimationClass()}
+                phase={state.phase === "showing_result" ? "result" : "guessing"}
+                isCorrect={state.isCorrect ?? undefined}
+              />
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="z-10 flex flex-col items-center mt-4 md:mt-6 pb-6 md:pb-0">
+            <span
+              className={`text-white/80 text-sm font-medium mb-0 ${
+                state.phase === "guessing" ? "" : "invisible"
+              }`}
+            >
+              Was{" "}
+              {currentCampaign.gender === "female"
+                ? "her"
+                : currentCampaign.gender === "male"
+                ? "his"
+                : "their"}{" "}
+              treatment funded?
+            </span>
+            <ActionButtons
+              onGuess={handleGuess}
+              onNext={handleNext}
+              showNext={state.phase === "showing_result"}
+              disabled={state.phase !== "guessing"}
+            />
+          </div>
+        </>
+      )}
 
       {/* Game Over Modal */}
       {state.phase === "game_over" && (
