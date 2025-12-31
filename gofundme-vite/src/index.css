@@ -87,3 +87,17 @@ body {
     opacity: 1;
   }
 }
+
+/* Result overlay slide in from right */
+.result-overlay-slide {
+  animation: slideInFromRight 0.15s ease-out forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

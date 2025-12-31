@@ -81,7 +81,7 @@ export default function Home() {
 
       {/* Radial blur/darken effect in center only */}
       <div
-        className="absolute inset-0 backdrop-blur-lg"
+        className="absolute inset-0 backdrop-blur-lg hidden md:block"
         style={{
           maskImage:
             "radial-gradient(circle, black 0%, black 25%, transparent 50%)",
@@ -89,24 +89,34 @@ export default function Home() {
             "radial-gradient(circle, black 0%, black 25%, transparent 50%)",
         }}
       ></div>
+      <div
+        className="absolute inset-0 backdrop-blur-lg md:hidden"
+        style={{
+          maskImage:
+            "radial-gradient(circle, black 0%, black 40%, transparent 75%)",
+          WebkitMaskImage:
+            "radial-gradient(circle, black 0%, black 40%, transparent 75%)",
+        }}
+      ></div>
       {/* Dark overlay - center only */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.85)_30%,transparent_55%)]"></div>
+      <div className="absolute inset-0 hidden md:block bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.85)_30%,transparent_55%)]"></div>
+      <div className="absolute inset-0 md:hidden bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_45%,transparent_80%)]"></div>
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
         <div className="text-center max-w-2xl">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg text-balance">
             🇺🇸 Heal Or No Heal 🇺🇸
           </h1>
 
           <div className="text-lg text-white mb-8 drop-shadow-lg text-left">
             <p className="mb-4">
-              In most developed countries, when a child gets sick, the country
+              In other developed countries, when a child gets sick, the country
               does something insane, like give the child{" "}
               <strong>free medical care</strong>.
             </p>
             <p className="mb-4">
-              In America, we do things better. We send the{" "}
+              In America, we do things better. We put the{" "}
               <strong>grieving, broke families</strong> hundreds of thousands of
               dollars into <strong>medical debt</strong>, then let them compete
               for money on <strong>GoFundMe</strong>!

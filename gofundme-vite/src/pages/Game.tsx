@@ -525,36 +525,23 @@ export default function Game() {
             number={state.totalSeen}
             overlay={
               state.phase === "showing_result" ? (
-                <div className="result-overlay absolute inset-0 flex items-center justify-center z-20 bg-black/60 md:rounded-3xl">
-                  <div className="flex flex-col items-center px-6 text-center">
-                    <div
-                      className={`flex items-center gap-4 mb-4 ${
-                        state.isCorrect ? "text-green-400" : "text-red-400"
-                      }`}
-                    >
-                      {state.isCorrect ? (
-                        <CheckCircle className="w-20 h-20 drop-shadow-lg" />
-                      ) : (
-                        <XCircle className="w-20 h-20 drop-shadow-lg" />
-                      )}
-                      <span className="text-5xl font-bold drop-shadow-lg">
-                        {state.isCorrect ? "Correct!" : "Wrong!"}
-                      </span>
-                    </div>
-                    <p className="text-white text-2xl drop-shadow-lg max-w-md">
-                      {currentCampaign.fundedSuccessfully ? (
-                        <>
-                          <span className="font-bold">{currentCampaign.name}</span>{" "}
-                          reached its funding goal!
-                        </>
-                      ) : (
-                        <>
-                          <span className="font-bold">{currentCampaign.name}</span>{" "}
-                          did not reach its funding goal. The founder is in debt.
-                        </>
-                      )}
-                    </p>
+                <div className="absolute inset-x-0 bottom-0 z-20 bg-black/90 md:rounded-b-3xl p-6">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    {state.isCorrect ? (
+                      <CheckCircle className="w-6 h-6 text-green-400" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-red-400" />
+                    )}
+                    <span className={`text-xl ${state.isCorrect ? "text-green-400" : "text-red-400"}`}>
+                      {state.isCorrect ? "Correct!" : "Wrong!"}
+                    </span>
                   </div>
+                  <p className="text-white text-2xl md:text-3xl text-left">
+                    {currentCampaign.name}'s {currentCampaign.idea}{" "}
+                    <span className={currentCampaign.fundedSuccessfully ? "text-green-400" : "text-red-400"}>
+                      {currentCampaign.fundedSuccessfully ? "was funded" : "was not funded"}
+                    </span>
+                  </p>
                 </div>
               ) : undefined
             }
