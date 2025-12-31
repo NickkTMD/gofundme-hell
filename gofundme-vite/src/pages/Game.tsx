@@ -7,8 +7,9 @@ import {
 import CampaignCard from "../components/game/CampaignCard";
 import ActionButtons from "../components/game/ActionButtons";
 import NavBar from "../components/NavBar";
-import { CheckCircle, XCircle, Trophy, RotateCcw, Share2 } from "lucide-react";
-const TOTAL_ROUNDS = 10;
+import { CheckCircle, XCircle, Trophy, RotateCcw, Share2, Home } from "lucide-react";
+import { Link } from "react-router-dom";
+const TOTAL_ROUNDS = 8;
 
 const medicalDebtComparison = {
   us: {
@@ -294,7 +295,7 @@ export default function Game() {
   // Phase transitions with timers
   useEffect(() => {
     if (state.phase === "showing_result") {
-      // Show result for 2.5s, then transition
+      // Show result for 1.5s, then transition
       const timer = setTimeout(() => {
         // If swiped, skip animation and go directly to next
         if (swipeOffset !== 0) {
@@ -302,7 +303,7 @@ export default function Game() {
         } else {
           dispatch({ type: "START_SWIPE" });
         }
-      }, 2500);
+      }, 1500);
       return () => clearTimeout(timer);
     }
     if (state.phase === "animating") {
@@ -428,8 +429,8 @@ export default function Game() {
         </div>
       </div>
 
-      {/* Top Entrepreneurs & Medical Debt - desktop only, fixed right */}
-      <div className="hidden md:flex fixed top-1/2 -translate-y-1/2 right-6 z-20 flex-col gap-2">
+      {/* Top Entrepreneurs & Medical Debt - desktop only, fixed bottom right */}
+      <div className="hidden md:flex fixed bottom-6 right-6 z-20 flex-col gap-2">
         {(() => {
           const items = [
             ...entrepreneurs.map((person, i) => ({
@@ -470,7 +471,7 @@ export default function Game() {
                 key="usDebt"
                 className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-3"
               >
-                <div className="w-12 h-12 rounded-full bg-blue-900 flex items-center justify-center text-3xl">
+                <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-3xl">
                   {medicalDebtComparison.us.flag}
                 </div>
                 <div className="text-left">
@@ -511,7 +512,7 @@ export default function Game() {
       {/* Card container */}
       <div className="relative w-full max-w-xl flex-1 min-h-0 flex justify-center z-10">
         <div
-          className="w-full h-full"
+          className="relative w-full h-full"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -522,43 +523,43 @@ export default function Game() {
             campaign={currentCampaign}
             animationClass={getAnimationClass()}
             number={state.totalSeen}
+            overlay={
+              state.phase === "showing_result" ? (
+                <div className="result-overlay absolute inset-0 flex items-center justify-center z-20 bg-black/60 md:rounded-3xl">
+                  <div className="flex flex-col items-center px-6 text-center">
+                    <div
+                      className={`flex items-center gap-4 mb-4 ${
+                        state.isCorrect ? "text-green-400" : "text-red-400"
+                      }`}
+                    >
+                      {state.isCorrect ? (
+                        <CheckCircle className="w-20 h-20 drop-shadow-lg" />
+                      ) : (
+                        <XCircle className="w-20 h-20 drop-shadow-lg" />
+                      )}
+                      <span className="text-5xl font-bold drop-shadow-lg">
+                        {state.isCorrect ? "Correct!" : "Wrong!"}
+                      </span>
+                    </div>
+                    <p className="text-white text-2xl drop-shadow-lg max-w-md">
+                      {currentCampaign.fundedSuccessfully ? (
+                        <>
+                          <span className="font-bold">{currentCampaign.name}</span>{" "}
+                          reached its funding goal!
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-bold">{currentCampaign.name}</span>{" "}
+                          did not reach its funding goal. The founder is in debt.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              ) : undefined
+            }
           />
         </div>
-
-        {/* Result overlay - shows after swipe, stays in place */}
-        {state.phase === "showing_result" && (
-          <div className="result-overlay absolute inset-0 flex items-center justify-center z-20 bg-black/60 md:rounded-3xl">
-            <div className="flex flex-col items-center px-6 text-center">
-              <div
-                className={`flex items-center gap-4 mb-4 ${
-                  state.isCorrect ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                {state.isCorrect ? (
-                  <CheckCircle className="w-20 h-20 drop-shadow-lg" />
-                ) : (
-                  <XCircle className="w-20 h-20 drop-shadow-lg" />
-                )}
-                <span className="text-5xl font-bold drop-shadow-lg">
-                  {state.isCorrect ? "Correct!" : "Wrong!"}
-                </span>
-              </div>
-              <p className="text-white text-2xl drop-shadow-lg max-w-md">
-                {currentCampaign.fundedSuccessfully ? (
-                  <>
-                    <span className="font-bold">{currentCampaign.name}</span>{" "}
-                    reached its funding goal!
-                  </>
-                ) : (
-                  <>
-                    <span className="font-bold">{currentCampaign.name}</span>{" "}
-                    did not reach its funding goal. The founder is in debt.
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Action buttons */}
@@ -644,11 +645,18 @@ export default function Game() {
                     alert("Copied to clipboard!");
                   }
                 }}
-                className="flex items-center justify-center gap-2 w-full py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-3 px-6 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-xl transition-colors"
               >
                 <Share2 className="w-5 h-5" />
                 Share Score
               </button>
+              <Link
+                to="/"
+                className="flex items-center justify-center gap-2 w-full py-3 px-6 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors"
+              >
+                <Home className="w-5 h-5" />
+                Back to Home
+              </Link>
             </div>
           </div>
         </div>

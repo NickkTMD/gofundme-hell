@@ -69,9 +69,9 @@ export default function Home() {
   const images = useMemo(() => getRandomImages(12), []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="h-screen relative overflow-hidden">
       {/* Collage background */}
-      <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-4 grid-rows-4 md:grid-rows-3 gap-1">
+      <div className="absolute inset-0 grid grid-cols-3 grid-rows-4 md:grid-cols-4 md:grid-rows-3 gap-1">
         {images.map((img, i) => (
           <div key={i} className="overflow-hidden">
             <img src={img} alt="" className="w-full h-full object-cover" />
@@ -95,27 +95,25 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
         <div className="text-center max-w-2xl">
-          {/* Eagle and flag header */}
-          <div className="text-6xl mb-4">🦅🇺🇸🦅</div>
-
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-            Was It <span className="text-yellow-400">Funded</span>?
+            🇺🇸 Heal Or No Heal 🇺🇸
           </h1>
 
           <div className="text-lg text-white mb-8 drop-shadow-lg text-left">
             <p className="mb-4">
               In most developed countries, when a child gets sick, the country
-              does something insane, like give the child free medical care.
+              does something insane, like give the child{" "}
+              <strong>free medical care</strong>.
             </p>
             <p className="mb-4">
-              In America, we do things better — we let the grieving, broke
-              families compete for money on GoFundMe to try to avoid going
-              hundreds of thousands of dollars into debt treating their child's
-              cancer!
+              In America, we do things better. We send the{" "}
+              <strong>grieving, broke families</strong> hundreds of thousands of
+              dollars into <strong>medical debt</strong>, then let them compete
+              for money on <strong>GoFundMe</strong>!
             </p>
             <p>
-              This is of course fucked up. We should also be making a game out
-              of it.
+              <strong>This is of course fucked up</strong> - why are we not also
+              gamifying it?
             </p>
           </div>
 
@@ -125,7 +123,7 @@ export default function Home() {
                        text-white text-xl font-bold rounded-xl transition-all transform
                        hover:scale-105 shadow-lg border-4 border-white"
           >
-            <Play className="w-6 h-6" />
+            <Play className="w-6 h-6" fill="currentColor" />
             PLAY NOW
           </Link>
 

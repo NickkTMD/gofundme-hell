@@ -16,7 +16,7 @@ export default function ResultOverlay({
   if (!visible) return null
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm rounded-2xl z-10">
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/90 backdrop-blur-sm rounded-2xl z-10">
       <div className="text-center px-6">
         {isCorrect ? (
           <CheckCircle className="w-20 h-20 text-green-400 mx-auto mb-4" />
