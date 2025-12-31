@@ -109,7 +109,7 @@ interface GameState {
   isCorrect: boolean | null;
   correctCount: number;
   incorrectCount: number;
-  totalRaised: number;
+  totalDebt: number;
 }
 
 type GameAction =
@@ -123,8 +123,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case "MAKE_GUESS": {
       const currentCampaign = state.campaigns[state.currentIndex];
       const isCorrect = action.guess === currentCampaign.fundedSuccessfully;
-      const addToRaised = currentCampaign.fundedSuccessfully
-        ? currentCampaign.goal
+      // Calculate debt: the gap between goal and raised (only if not funded)
+      const debt = (currentCampaign.raised !== undefined && currentCampaign.raised < currentCampaign.goal)
+        ? currentCampaign.goal - currentCampaign.raised
         : 0;
       return {
         ...state,
@@ -133,7 +134,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         isCorrect,
         correctCount: state.correctCount + (isCorrect ? 1 : 0),
         incorrectCount: state.incorrectCount + (isCorrect ? 0 : 1),
-        totalRaised: state.totalRaised + addToRaised,
+        totalDebt: state.totalDebt + debt,
       };
     }
     case "START_SWIPE":
@@ -182,7 +183,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         isCorrect: null,
         correctCount: 0,
         incorrectCount: 0,
-        totalRaised: 0,
+        totalDebt: 0,
       };
     default:
       return state;
@@ -199,7 +200,7 @@ function getInitialState(): GameState {
     isCorrect: null,
     correctCount: 0,
     incorrectCount: 0,
-    totalRaised: 0,
+    totalDebt: 0,
   };
 }
 
@@ -421,10 +422,10 @@ export default function Game() {
         </div>
         <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
           <div className="text-3xl font-bold text-white">
-            {formatRaised(state.totalRaised || 0)}
+            {formatRaised(state.totalDebt || 0)}
           </div>
           <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Total Raised
+            Medical Debt
           </div>
         </div>
       </div>
@@ -522,7 +523,6 @@ export default function Game() {
             key={currentCampaign.id}
             campaign={currentCampaign}
             animationClass={getAnimationClass()}
-            number={state.totalSeen}
             overlay={
               state.phase === "showing_result" ? (
                 <div className="absolute inset-x-0 bottom-0 z-20 bg-black/90 md:rounded-b-3xl p-6">
@@ -541,6 +541,15 @@ export default function Game() {
                     <span className={currentCampaign.fundedSuccessfully ? "text-green-400" : "text-red-400"}>
                       {currentCampaign.fundedSuccessfully ? "was funded" : "was not funded"}
                     </span>
+                    {currentCampaign.fundedSuccessfully ? (
+                      currentCampaign.numDonations ? (
+                        <span className="text-gray-300"> with {currentCampaign.numDonations} donation{currentCampaign.numDonations !== 1 ? 's' : ''}</span>
+                      ) : null
+                    ) : (
+                      currentCampaign.raised !== undefined && currentCampaign.goal ? (
+                        <span className="text-gray-300"> - ${(currentCampaign.goal - currentCampaign.raised).toLocaleString()} short of goal</span>
+                      ) : null
+                    )}
                   </p>
                 </div>
               ) : undefined
@@ -573,10 +582,10 @@ export default function Game() {
         </div>
         <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center">
           <div className="text-2xl font-bold text-white">
-            {formatRaised(state.totalRaised || 0)}
+            {formatRaised(state.totalDebt || 0)}
           </div>
           <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Total Raised
+            Medical Debt
           </div>
         </div>
       </div>
@@ -606,9 +615,9 @@ export default function Game() {
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold text-white">
-                  {formatRaised(state.totalRaised)}
+                  {formatRaised(state.totalDebt)}
                 </div>
-                <div className="text-sm text-gray-400">Raised</div>
+                <div className="text-sm text-gray-400">Medical Debt</div>
               </div>
             </div>
 
