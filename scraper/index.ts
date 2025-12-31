@@ -1,23 +1,16 @@
 import puppeteer from 'puppeteer';
 import { DateTime } from 'luxon';
-import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
+import Anthropic from '@anthropic-ai/sdk';
 import { parseDonations } from './utils';
 import fs from 'fs';
 
-const SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-const ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-const SESSION_TOKEN = process.env.AWS_SESSION_TOKEN;
-if (!SECRET_ACCESS_KEY || !ACCESS_KEY_ID || !SESSION_TOKEN) {
-    throw new Error("AWS SECRET_ACCESS_KEY, ACCESS_KEY_ID, and SESSION_TOKEN must be set");
+const { ANTHROPIC_API_KEY } = process.env;
+if (!ANTHROPIC_API_KEY) {
+    throw new Error("ANTHROPIC_API_KEY must be set");
 }
 
-const client = new BedrockRuntimeClient({
-    region:'us-east-1', 
-	credentials:{
-		accessKeyId: ACCESS_KEY_ID,
-		secretAccessKey: SECRET_ACCESS_KEY,
-        sessionToken: SESSION_TOKEN,
-	}
+const anthropic = new Anthropic({
+    apiKey: ANTHROPIC_API_KEY,
 });
 
 const urls = [
@@ -103,7 +96,26 @@ const urls = [
     "https://www.gofundme.com/f/help-with-addisons-medical-journey",
     "https://www.gofundme.com/f/support-for-lexi-and-norastarrs-medical-journeys",
     "https://www.gofundme.com/f/baby-gabriels-struggle-medical-costs",
-    "https://www.gofundme.com/f/g5vsnh-support-baby-masons-medical-journey"
+    "https://www.gofundme.com/f/g5vsnh-support-baby-masons-medical-journey",
+    "https://www.gofundme.com/f/support-keonis-fight-against-neuroblastoma",
+    "https://www.gofundme.com/f/thumbs-up-for-declan-fighting-childhood-cancer",
+    "https://www.gofundme.com/f/uad896-help-jack-beat-cancer",
+    "https://www.gofundme.com/f/hudsons-childhood-cancer-journey",
+    "https://www.gofundme.com/f/fighting-childhood-cancer-the-evie-fund",
+    "https://www.gofundme.com/f/cjs-battle-with-cancer",
+    "https://www.gofundme.com/f/sebastian039s-fight-with-stage-4-childhood-cancer",
+    "https://www.gofundme.com/f/help-baby-owen-through-cancer-treatment",
+    "https://www.gofundme.com/f/thumbs-up-for-declan-fighting-childhood-cancer",
+    // "https://www.gofundme.com/f/make-carters-wish-come-true", 
+    "https://www.gofundme.com/f/baby-peyton-needs-our-help-beating-cancer",
+    "https://www.gofundme.com/f/hope-for-harper-help-fight-rare-pediatric-cancer",
+    "https://www.gofundme.com/f/help-kaitlyn-and-rhodes-fight-rare-tumor",
+    "https://www.gofundme.com/f/charlottes-childhood-cancer-journey",
+    "https://www.gofundme.com/f/support-keonis-fight-against-neuroblastoma",
+    "https://www.gofundme.com/f/help-cassidy-fight-stage-4-neuroblastoma",
+    "https://www.gofundme.com/f/ciaras-childhood-cancer-story",
+    "https://www.gofundme.com/f/fighting-childhood-cancer-the-evie-fund",
+    "https://www.gofundme.com/f/charlottes-childhood-cancer-journey"
 ];
 
 const browser = await puppeteer.launch({ headless: false, defaultViewport: { width: 1920, height: 1080 } });
@@ -117,7 +129,7 @@ for (const url of urls) {
     }
 
     console.log("Processing:", url, slug);
-    
+
     page.goto(url);
     await page.waitForNetworkIdle();
 
@@ -158,29 +170,23 @@ for (const url of urls) {
     }))?.replace("Created ", "").replace(/(\d+)(st|nd|rd|th)/, '$1').trim();
     const creationDate = creationDateString ? DateTime.fromFormat(creationDateString, 'MMMM d, yyyy').toISODate() : null;
 
-    const result = await client.send(new InvokeModelCommand({
-        modelId: "anthropic.claude-3-5-sonnet-20240620-v1:0",
-        contentType: "application/json",
-        accept: "application/json",
-        body: JSON.stringify({
-            anthropic_version: "bedrock-2023-05-31",
-            max_tokens: 1000,
-            messages: [
-                {
-                    role: "user",
-                    content: [
-                        {
-                            type: "text",
-                            text: `The following is a description of a GoFundMe campaign. Please return (1) the name of the person the campaign is for, (2), their age in years, (3) the disease or condition that the campaign is for. Be as specific as possible. If you are not sure, return "Unknown" for the name and disease, and -1 for age. Return as JSON with the keys "name", "age", and "disease". Do NOT return anything other than the JSON.\n\nTitle: ${title}\nDescription: ${description}`
-                        }
-                    ]
-                }
-            ]
-        }),
-    }));
+    const message = await anthropic.messages.create({
+        model: "claude-sonnet-4-5-20250929",
+        max_tokens: 1000,
+        messages: [
+            {
+                role: "user",
+                content: `The following is a description of a GoFundMe campaign. Please return (1) the name of the person the campaign is for, (2), their age in years, (3) the disease or condition that the campaign is for, and (4) their gender. Be as specific as possible. If you are not sure, return "Unknown" for the name and disease, and -1 for age. Gender should be "male" or "female", and if it is not specified, make your best guess. If it truly cannot be inferred, return "Unknown". Return as JSON with the keys "name", "age", "disease", and "gender". Do NOT return anything other than the JSON.\n\nTitle: ${title}\nDescription: ${description}`
+            }
+        ]
+    });
 
-    const responseBody = JSON.parse(new TextDecoder().decode(result.body));
-    const { name, age, disease } = JSON.parse(responseBody.content[0].text.trim());
+    const textBlock = message.content.find(block => block.type === 'text');
+    if (!textBlock || textBlock.type !== 'text') {
+        throw new Error('No text response from Claude');
+    }
+
+    const { name, age, disease, gender } = JSON.parse(textBlock.text.trim().replace("```json", "").replace("```", ""));
 
     const baseData = {
         url,
@@ -195,13 +201,16 @@ for (const url of urls) {
         age,
         disease,
         raised,
-        goal
+        goal,
+        gender
     }
 
     // If any keys are undefined, raise
     for (const key of Object.keys(baseData)) {
-        if (!baseData[key]) {
-            throw new Error(`${key} is undefined`);
+        const val = baseData[key as keyof typeof baseData];
+        if (val === undefined || val === null || val === "") {
+            console.log(baseData);
+            throw new Error(`${key} is not set`);
         }
     }
 
