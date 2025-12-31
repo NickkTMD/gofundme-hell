@@ -1,13 +1,13 @@
 import { useReducer, useEffect, useMemo, useState, useRef } from "react";
 import {
-  getShuffledCampaigns,
+  getBalancedCampaigns,
   getPlaceholderImage,
   type Campaign,
 } from "../data/campaigns";
 import CampaignCard from "../components/game/CampaignCard";
 import ActionButtons from "../components/game/ActionButtons";
 import NavBar from "../components/NavBar";
-import { CheckCircle, XCircle, Trophy, RotateCcw, Share2, Home } from "lucide-react";
+import { Trophy, RotateCcw, Share2, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 const TOTAL_ROUNDS = 8;
 
@@ -156,7 +156,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       if (nextIndex >= state.campaigns.length) {
         return {
           ...state,
-          campaigns: getShuffledCampaigns(),
+          campaigns: getBalancedCampaigns(),
           currentIndex: 0,
           totalSeen: newTotalSeen,
           phase: "guessing",
@@ -175,7 +175,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     }
     case "RESET_GAME":
       return {
-        campaigns: getShuffledCampaigns(),
+        campaigns: getBalancedCampaigns(),
         currentIndex: 0,
         totalSeen: 1,
         phase: "guessing",
@@ -192,7 +192,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
 function getInitialState(): GameState {
   return {
-    campaigns: getShuffledCampaigns(),
+    campaigns: getBalancedCampaigns(),
     currentIndex: 0,
     totalSeen: 1,
     phase: "guessing",
@@ -217,6 +217,7 @@ function formatRaised(amount: number): string {
   }
   return `$${amount}`;
 }
+
 
 const entrepreneurs = [
   {
@@ -293,31 +294,14 @@ export default function Game() {
     }
   }, [state.currentIndex, state.campaigns]);
 
-  // Phase transitions with timers
-  useEffect(() => {
-    if (state.phase === "showing_result") {
-      // Show result for 1.5s, then transition
-      const timer = setTimeout(() => {
-        // If swiped, skip animation and go directly to next
-        if (swipeOffset !== 0) {
-          dispatch({ type: "NEXT_CAMPAIGN" });
-        } else {
-          dispatch({ type: "START_SWIPE" });
-        }
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-    if (state.phase === "animating") {
-      // After swipe animation (0.3s), go to next card
-      const timer = setTimeout(() => {
-        dispatch({ type: "NEXT_CAMPAIGN" });
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [state.phase, swipeOffset]);
+  // No automatic phase transitions - user must click Next
 
   const handleGuess = (funded: boolean) => {
     dispatch({ type: "MAKE_GUESS", guess: funded });
+  };
+
+  const handleNext = () => {
+    dispatch({ type: "NEXT_CAMPAIGN" });
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -409,12 +393,47 @@ export default function Game() {
       {/* Nav bar */}
       <NavBar />
 
+      {/* Scoreboard - mobile only, at top */}
+      <div className="flex md:hidden z-10 gap-2 mt-4 px-4">
+        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center flex-1">
+          <div className="text-2xl font-bold text-white">
+            {state.totalSeen}/8
+          </div>
+          <div className="text-xs text-gray-400 uppercase tracking-wide">
+            Round
+          </div>
+        </div>
+        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center flex-1">
+          <div className="text-2xl font-bold text-white">
+            {state.correctCount || 0}
+          </div>
+          <div className="text-xs text-gray-400 uppercase tracking-wide">
+            Score
+          </div>
+        </div>
+        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center flex-1">
+          <div className="text-2xl font-bold text-white">
+            {formatRaised(state.totalDebt || 0)}
+          </div>
+          <div className="text-xs text-gray-400 uppercase tracking-wide">
+            Debt
+          </div>
+        </div>
+      </div>
+
       {/* Scoreboard - desktop only, fixed bottom left */}
       <div className="hidden md:flex fixed bottom-6 left-6 z-20 flex-col gap-2">
         <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
           <div className="text-3xl font-bold text-white">
-            {state.correctCount || 0}/
-            {(state.correctCount || 0) + (state.incorrectCount || 0)}
+            {state.totalSeen}/8
+          </div>
+          <div className="text-xs text-gray-400 uppercase tracking-wide">
+            Round
+          </div>
+        </div>
+        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
+          <div className="text-3xl font-bold text-white">
+            {state.correctCount || 0}
           </div>
           <div className="text-xs text-gray-400 uppercase tracking-wide">
             Score
@@ -523,71 +542,23 @@ export default function Game() {
             key={currentCampaign.id}
             campaign={currentCampaign}
             animationClass={getAnimationClass()}
-            overlay={
-              state.phase === "showing_result" ? (
-                <div className="absolute inset-x-0 bottom-0 z-20 bg-black/90 md:rounded-b-3xl p-6">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    {state.isCorrect ? (
-                      <CheckCircle className="w-6 h-6 text-green-400" />
-                    ) : (
-                      <XCircle className="w-6 h-6 text-red-400" />
-                    )}
-                    <span className={`text-xl ${state.isCorrect ? "text-green-400" : "text-red-400"}`}>
-                      {state.isCorrect ? "Correct!" : "Wrong!"}
-                    </span>
-                  </div>
-                  <p className="text-white text-2xl md:text-3xl text-left">
-                    {currentCampaign.name}'s {currentCampaign.idea}{" "}
-                    <span className={currentCampaign.fundedSuccessfully ? "text-green-400" : "text-red-400"}>
-                      {currentCampaign.fundedSuccessfully ? "was funded" : "was not funded"}
-                    </span>
-                    {currentCampaign.fundedSuccessfully ? (
-                      currentCampaign.numDonations ? (
-                        <span className="text-gray-300"> with {currentCampaign.numDonations} donation{currentCampaign.numDonations !== 1 ? 's' : ''}</span>
-                      ) : null
-                    ) : (
-                      currentCampaign.raised !== undefined && currentCampaign.goal ? (
-                        <span className="text-gray-300"> - ${(currentCampaign.goal - currentCampaign.raised).toLocaleString()} short of goal</span>
-                      ) : null
-                    )}
-                  </p>
-                </div>
-              ) : undefined
-            }
+            phase={state.phase === "showing_result" ? "result" : "guessing"}
+            isCorrect={state.isCorrect ?? undefined}
           />
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="z-10 flex flex-col items-center mt-4 md:mt-6">
-        <span className="text-white/80 text-sm font-medium mb-0">
+      <div className="z-10 flex flex-col items-center mt-4 md:mt-6 pb-6 md:pb-0">
+        <span className={`text-white/80 text-sm font-medium mb-0 ${state.phase === "guessing" ? "" : "invisible"}`}>
           Did it get funded?
         </span>
         <ActionButtons
           onGuess={handleGuess}
+          onNext={handleNext}
+          showNext={state.phase === "showing_result"}
           disabled={state.phase !== "guessing"}
         />
-      </div>
-
-      {/* Scoreboard - mobile only, below buttons */}
-      <div className="flex md:hidden z-10 gap-3 mt-4">
-        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center">
-          <div className="text-2xl font-bold text-white">
-            {state.correctCount || 0}/
-            {(state.correctCount || 0) + (state.incorrectCount || 0)}
-          </div>
-          <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Score
-          </div>
-        </div>
-        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-3 py-2 text-center">
-          <div className="text-2xl font-bold text-white">
-            {formatRaised(state.totalDebt || 0)}
-          </div>
-          <div className="text-xs text-gray-400 uppercase tracking-wide">
-            Medical Debt
-          </div>
-        </div>
       </div>
 
       {/* Game Over Modal */}

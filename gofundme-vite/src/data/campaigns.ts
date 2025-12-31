@@ -57,3 +57,21 @@ export const campaigns: Campaign[] = transformCampaignData()
 export function getShuffledCampaigns(): Campaign[] {
   return [...campaigns].sort(() => Math.random() - 0.5)
 }
+
+export function getBalancedCampaigns(): Campaign[] {
+  const funded = campaigns.filter(c => c.fundedSuccessfully)
+  const unfunded = campaigns.filter(c => !c.fundedSuccessfully)
+
+  // Shuffle both arrays
+  const shuffledFunded = [...funded].sort(() => Math.random() - 0.5)
+  const shuffledUnfunded = [...unfunded].sort(() => Math.random() - 0.5)
+
+  // Pick 2 funded and 6 unfunded
+  const selected = [
+    ...shuffledFunded.slice(0, 2),
+    ...shuffledUnfunded.slice(0, 6)
+  ]
+
+  // Shuffle the combined array so they're not all funded first
+  return selected.sort(() => Math.random() - 0.5)
+}

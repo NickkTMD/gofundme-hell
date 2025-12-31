@@ -1,24 +1,22 @@
 import type { Campaign } from '../../data/campaigns'
-import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { getPlaceholderImage } from '../../data/campaigns'
 import gofundmeLogo from '../../assets/GoFundMe_Logo.svg'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import ContentSection from './CampaignCard/ContentSection'
 
 interface CampaignCardProps {
   campaign: Campaign
   animationClass: string
-  overlay?: ReactNode
-}
-
-function formatGoal(goal: number): string {
-  return goal.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  phase: 'guessing' | 'result'
+  isCorrect?: boolean
 }
 
 export default function CampaignCard({
   campaign,
   animationClass,
-  overlay,
+  phase,
+  isCorrect,
 }: CampaignCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
@@ -90,27 +88,6 @@ export default function CampaignCard({
           </>
         )}
 
-        {/* Image Indicators - only show if multiple images */}
-        {hasMultipleImages && (
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setCurrentImageIndex(index)
-                }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentImageIndex
-                    ? 'bg-white w-6'
-                    : 'bg-white/50 hover:bg-white/75'
-                }`}
-                aria-label={`Go to image ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
-
         {/* GoFundMe Logo */}
         <img
           src={gofundmeLogo}
@@ -119,26 +96,16 @@ export default function CampaignCard({
         />
       </div>
 
-      {/* Content Section - overlaid on mobile, separate on desktop */}
-      <div className="relative mt-auto p-4 md:p-6 md:bg-gradient-to-t md:from-gray-900 md:to-gray-900/95">
-        <h2 className="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2">
-          {campaign.name}
-          {campaign.age !== undefined && (
-            <span className="font-normal text-gray-400"> {campaign.age}</span>
-          )}
-        </h2>
-
-        <p className="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-2 mb-1 md:mb-2">
-          {campaign.description}
-        </p>
-
-        <p className="text-gray-400 text-sm md:text-base">
-          Goal: <span className="text-white font-semibold">{formatGoal(campaign.goal)}</span>
-        </p>
-      </div>
-
-      {/* Overlay slot - renders inside card bounds */}
-      {overlay}
+      {/* Content Section - always rendered, morphs between phases */}
+      <ContentSection
+        campaign={campaign}
+        phase={phase}
+        isCorrect={isCorrect}
+        hasMultipleImages={hasMultipleImages}
+        currentImageIndex={currentImageIndex}
+        onImageIndexChange={setCurrentImageIndex}
+        images={images}
+      />
     </div>
   )
 }
