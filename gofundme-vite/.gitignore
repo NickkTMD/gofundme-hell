@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # all images in src/assets/america
-src/assets/america/*
+# src/assets/america/*

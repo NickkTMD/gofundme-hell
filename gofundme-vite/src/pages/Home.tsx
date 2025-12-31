@@ -1,45 +1,72 @@
-import { Link } from 'react-router-dom'
-import { Play } from 'lucide-react'
-import { useMemo } from 'react'
+import { Link } from "react-router-dom";
+import { Play } from "lucide-react";
+import { useMemo } from "react";
 
 // Import all america images
-import img1 from '../assets/america/1.jpg'
-import img2 from '../assets/america/2.jpg'
-import img3 from '../assets/america/3.jpg'
-import img4 from '../assets/america/4.jpg'
-import img5 from '../assets/america/5.jpg'
-import img6 from '../assets/america/6.jpg'
-import img7 from '../assets/america/7.jpg'
-import img8 from '../assets/america/8.jpg'
-import img9 from '../assets/america/9.jpg'
-import img10 from '../assets/america/10.jpg'
-import img11 from '../assets/america/11.jpg'
-import img12 from '../assets/america/12.jpg'
-import img13 from '../assets/america/13.jpg'
-import img14 from '../assets/america/14.jpg'
-import img15 from '../assets/america/15.jpg'
-import img16 from '../assets/america/16.jpg'
-import img17 from '../assets/america/17.jpg'
-import img18 from '../assets/america/18.jpg'
-import img19 from '../assets/america/19.jpg'
-import img20 from '../assets/america/20.webp'
-import img21 from '../assets/america/21.avif'
-import img22 from '../assets/america/22.avif'
-import img23 from '../assets/america/23.webp'
-import img24 from '../assets/america/24.webp'
-import img25 from '../assets/america/25.avif'
-import img26 from '../assets/america/26.jpg'
+import img1 from "../assets/america/1.jpg";
+import img2 from "../assets/america/2.jpg";
+import img3 from "../assets/america/3.jpg";
+import img4 from "../assets/america/4.jpg";
+import img5 from "../assets/america/5.jpg";
+import img6 from "../assets/america/6.jpg";
+import img7 from "../assets/america/7.jpg";
+import img8 from "../assets/america/8.jpg";
+import img9 from "../assets/america/9.jpg";
+import img10 from "../assets/america/10.jpg";
+import img11 from "../assets/america/11.jpg";
+import img12 from "../assets/america/12.jpg";
+import img13 from "../assets/america/13.jpg";
+import img14 from "../assets/america/14.jpg";
+import img15 from "../assets/america/15.jpg";
+import img16 from "../assets/america/16.jpg";
+import img17 from "../assets/america/17.jpg";
+import img18 from "../assets/america/18.jpg";
+import img19 from "../assets/america/19.jpg";
+import img20 from "../assets/america/20.webp";
+import img21 from "../assets/america/21.avif";
+import img22 from "../assets/america/22.avif";
+import img23 from "../assets/america/23.webp";
+import img24 from "../assets/america/24.webp";
+import img25 from "../assets/america/25.avif";
+import img26 from "../assets/america/26.jpg";
 
-const allImages = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, img13, img14, img15, img16, img17, img18, img19, img20, img21, img22, img23, img24, img25, img26]
+const allImages = [
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
+  img6,
+  img7,
+  img8,
+  img9,
+  img10,
+  img11,
+  img12,
+  img13,
+  img14,
+  img15,
+  img16,
+  img17,
+  img18,
+  img19,
+  img20,
+  img21,
+  img22,
+  img23,
+  img24,
+  img25,
+  img26,
+];
 
 function getRandomImages(count: number) {
-  const shuffled = [...allImages].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, count)
+  const shuffled = [...allImages].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
 }
 
 export default function Home() {
   // Pick 12 random images on each render
-  const images = useMemo(() => getRandomImages(12), [])
+  const images = useMemo(() => getRandomImages(12), []);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -47,11 +74,7 @@ export default function Home() {
       <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-4 grid-rows-4 md:grid-rows-3 gap-1">
         {images.map((img, i) => (
           <div key={i} className="overflow-hidden">
-            <img
-              src={img}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+            <img src={img} alt="" className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -60,8 +83,10 @@ export default function Home() {
       <div
         className="absolute inset-0 backdrop-blur-lg"
         style={{
-          maskImage: 'radial-gradient(circle, black 0%, black 25%, transparent 50%)',
-          WebkitMaskImage: 'radial-gradient(circle, black 0%, black 25%, transparent 50%)'
+          maskImage:
+            "radial-gradient(circle, black 0%, black 25%, transparent 50%)",
+          WebkitMaskImage:
+            "radial-gradient(circle, black 0%, black 25%, transparent 50%)",
         }}
       ></div>
       {/* Dark overlay - center only */}
@@ -79,10 +104,18 @@ export default function Home() {
 
           <div className="text-lg text-white mb-8 drop-shadow-lg text-left">
             <p className="mb-4">
-              In most developed countries, when a child gets sick, the country does something insane, like give the child free medical care.
+              In most developed countries, when a child gets sick, the country
+              does something insane, like give the child free medical care.
+            </p>
+            <p className="mb-4">
+              In America, we do things better — we let the grieving, broke
+              families compete for money on GoFundMe to try to avoid going
+              hundreds of thousands of dollars into debt treating their child's
+              cancer!
             </p>
             <p>
-              In America, we do things better — we let the grieving, broke families compete for money on GoFundMe to try to avoid going hundreds of thousands of dollars into debt treating their child's cancer!
+              This is of course fucked up. We should also be making a game out
+              of it.
             </p>
           </div>
 
@@ -97,14 +130,14 @@ export default function Home() {
           </Link>
 
           <p className="mt-8 text-white text-sm drop-shadow-lg">
-            <span className="font-semibold">Hint:</span> Cuter children tend to reach their medical funding goals more often. But maybe don't think about that too hard.
+            <span className="font-semibold">Hint:</span> Cuter children tend to
+            reach their medical funding goals more often. But maybe don't think
+            about that too hard.
           </p>
 
-          <div className="mt-4 text-4xl">
-            ⭐⭐⭐⭐⭐
-          </div>
+          <div className="mt-4 text-4xl">⭐⭐⭐⭐⭐</div>
         </div>
       </div>
     </div>
-  )
+  );
 }
