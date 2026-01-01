@@ -103,7 +103,7 @@ export default function Home() {
       <div className="absolute inset-0 md:hidden bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_60%,transparent_100%)]"></div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-start px-6 pt-1 md:pt-2 overflow-auto">
+      <div className="relative z-10 h-full flex flex-col items-center justify-start md:justify-center px-6 pt-1 md:pt-0 overflow-auto">
         <div className="text-center max-w-2xl">
           <div className="mb-0 flex justify-center">
             <img
@@ -114,20 +114,21 @@ export default function Home() {
           </div>
 
           <div className="text-lg text-white mb-3 drop-shadow-lg text-left">
-            <p className="mb-2">
+            <p className="mb-4">
               In other developed countries, when a child gets sick, the country
               does something insane - they give them{" "}
               <strong>free medical care</strong>.
             </p>
-            <p className="mb-2">
+            <p className="mb-4">
               Thankfully, in America we do things better. We put the{" "}
               <strong>grieving, broke families</strong> hundreds of thousands of
               dollars into <strong>medical debt</strong>, then let them compete
               for money on <strong>GoFundMe</strong>!
             </p>
             <p className="mb-0">
-              <strong>This is of course fucked up</strong> - why are we not also
-              gamifying it?
+              <strong>
+                Can you correctly guess which children's care was funded?
+              </strong>
             </p>
           </div>
 

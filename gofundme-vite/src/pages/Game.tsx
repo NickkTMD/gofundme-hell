@@ -604,7 +604,7 @@ export default function Game() {
               🇺🇸 How To Play 🇺🇸
             </h2>
 
-            <div className="text-center text-white/90 space-y-4 mb-8 text-sm md:text-base">
+            <div className="text-center text-white/90 space-y-4 mb-8 text-base md:text-lg">
               <p>
                 You will be shown{" "}
                 <strong>real GoFundMe campaigns</strong>{" "}
@@ -627,7 +627,7 @@ export default function Game() {
               I'm ready
             </button>
 
-            <p className="mt-6 text-white/80 text-sm text-balance text-center">
+            <p className="mt-6 text-white/90 text-sm text-balance text-center">
               <span className="font-semibold">Hint!</span> Cuter and whiter
               children tend to reach their medical funding goals more often.
             </p>
