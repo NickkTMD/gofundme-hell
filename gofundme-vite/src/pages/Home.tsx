@@ -69,9 +69,9 @@ export default function Home() {
   const images = useMemo(() => getRandomImages(12), []);
 
   return (
-    <div className="h-dvh relative overflow-hidden">
-      {/* Collage background */}
-      <div className="absolute inset-0 grid grid-cols-3 grid-rows-4 md:grid-cols-4 md:grid-rows-3 gap-1">
+    <div className="h-lvh relative overflow-hidden">
+      {/* Collage background - uses lvh to fill behind browser chrome */}
+      <div className="absolute inset-0 h-lvh grid grid-cols-3 grid-rows-4 md:grid-cols-4 md:grid-rows-3 gap-1">
         {images.map((img, i) => (
           <div key={i} className="overflow-hidden">
             <img src={img} alt="" className="w-full h-full object-cover" />
@@ -103,17 +103,19 @@ export default function Home() {
       <div className="absolute inset-0 md:hidden bg-[radial-gradient(circle,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_60%,transparent_100%)]"></div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-start md:justify-center px-6 pt-1 md:pt-0 overflow-auto">
+      <div className="relative z-10 h-dvh flex flex-col items-center justify-start md:justify-center px-6 pt-1 md:pt-0 overflow-auto">
         <div className="text-center max-w-2xl">
           <div className="mb-0 flex justify-center">
-            <img
-              src="/logo.png"
-              alt="Heal Or No Heal"
-              className="w-full max-w-xs md:max-w-md h-auto drop-shadow-lg"
-            />
+            <div className="w-full max-w-[13rem] md:max-w-md aspect-square">
+              <img
+                src="/logo.png"
+                alt="Heal Or No Heal"
+                className="w-full h-full drop-shadow-lg"
+              />
+            </div>
           </div>
 
-          <div className="text-lg text-white mb-3 drop-shadow-lg text-left">
+          <div className="text-base md:text-lg text-white mb-3 drop-shadow-lg text-left">
             <p className="mb-4">
               In other developed countries, when a child gets sick, the country
               does something insane - they give them{" "}

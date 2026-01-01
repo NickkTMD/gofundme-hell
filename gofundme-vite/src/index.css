@@ -40,52 +40,6 @@ body {
   overflow: hidden;
 }
 
-/* Card swipe animations */
-.card-exit-left {
-  animation: slideOutLeft 0.3s ease-out forwards;
-}
-
-.card-exit-right {
-  animation: slideOutRight 0.3s ease-out forwards;
-}
-
-.card-enter {
-  animation: slideInUp 0.3s ease-out forwards;
-}
-
-@keyframes slideOutLeft {
-  from {
-    transform: translateX(0) rotate(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(-100%) rotate(-15deg);
-    opacity: 0;
-  }
-}
-
-@keyframes slideOutRight {
-  from {
-    transform: translateX(0) rotate(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%) rotate(15deg);
-    opacity: 0;
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
 /* Result overlay fade in */
 .result-overlay {
   animation: fadeIn 0.2s ease-out forwards;

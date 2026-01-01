@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useMemo, useState, useRef } from "react";
+import { useReducer, useEffect, useMemo, useState } from "react";
 import {
   getBalancedCampaigns,
   getPlaceholderImage,
@@ -111,7 +111,7 @@ interface GameState {
   campaigns: Campaign[];
   currentIndex: number;
   totalSeen: number;
-  phase: "guessing" | "showing_result" | "animating" | "game_over";
+  phase: "guessing" | "showing_result" | "game_over";
   userGuess: boolean | null;
   isCorrect: boolean | null;
   correctCount: number;
@@ -121,7 +121,6 @@ interface GameState {
 
 type GameAction =
   | { type: "MAKE_GUESS"; guess: boolean }
-  | { type: "START_SWIPE" }
   | { type: "NEXT_CAMPAIGN" }
   | { type: "RESET_GAME" };
 
@@ -146,11 +145,6 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         totalDebt: state.totalDebt + debt,
       };
     }
-    case "START_SWIPE":
-      return {
-        ...state,
-        phase: "animating",
-      };
     case "NEXT_CAMPAIGN": {
       // Check if game is over (completed all rounds)
       if (state.totalSeen >= TOTAL_ROUNDS) {
@@ -265,11 +259,6 @@ export default function Game() {
   // Instructions screen state
   const [showInstructions, setShowInstructions] = useState(true);
 
-  // Swipe handling - declare before useEffects that use it
-  const [swipeOffset, setSwipeOffset] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const SWIPE_THRESHOLD = 100;
-
   // Animated net worths - start 1% lower, only go up
   const [netWorths, setNetWorths] = useState(
     entrepreneurs.map((e) => e.netWorth * 0.99)
@@ -316,61 +305,6 @@ export default function Game() {
 
   const handleNext = () => {
     dispatch({ type: "NEXT_CAMPAIGN" });
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (state.phase !== "guessing") return;
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (state.phase !== "guessing" || touchStartX.current === null) return;
-    const diff = e.touches[0].clientX - touchStartX.current;
-    setSwipeOffset(diff);
-  };
-
-  const handleTouchEnd = () => {
-    if (state.phase !== "guessing" || touchStartX.current === null) return;
-    if (Math.abs(swipeOffset) > SWIPE_THRESHOLD) {
-      // Keep the card swiped out, don't reset offset
-      handleGuess(swipeOffset > 0);
-    } else {
-      // Only reset if swipe wasn't enough
-      setSwipeOffset(0);
-    }
-    touchStartX.current = null;
-  };
-
-  // Reset swipe offset when campaign changes
-  useEffect(() => {
-    setSwipeOffset(0);
-  }, [state.currentIndex]);
-
-  const getAnimationClass = () => {
-    if (state.phase !== "animating") return "";
-    return state.userGuess ? "card-exit-right" : "card-exit-left";
-  };
-
-  const getSwipeStyle = (): React.CSSProperties => {
-    // During showing_result after a swipe, animate card off screen
-    if (state.phase === "showing_result" && swipeOffset !== 0) {
-      const direction = swipeOffset > 0 ? 1 : -1;
-      return {
-        transform: `translateX(${direction * 150}%) rotate(${
-          direction * 15
-        }deg)`,
-        transition: "transform 0.3s ease-out",
-      };
-    }
-    // During active swiping
-    if (state.phase === "guessing" && swipeOffset !== 0) {
-      const rotation = swipeOffset * 0.05;
-      return {
-        transform: `translateX(${swipeOffset}px) rotate(${rotation}deg)`,
-        transition: "none",
-      };
-    }
-    return {};
   };
 
   return (
@@ -637,21 +571,12 @@ export default function Game() {
         <>
           {/* Card container */}
           <div className="relative w-full max-w-xl flex-1 min-h-0 flex justify-center z-10">
-            <div
-              className="relative w-full h-full touch-pan-x"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              style={getSwipeStyle()}
-            >
-              <CampaignCard
-                key={currentCampaign.id}
-                campaign={currentCampaign}
-                animationClass={getAnimationClass()}
-                phase={state.phase === "showing_result" ? "result" : "guessing"}
-                isCorrect={state.isCorrect ?? undefined}
-              />
-            </div>
+            <CampaignCard
+              key={currentCampaign.id}
+              campaign={currentCampaign}
+              phase={state.phase === "showing_result" ? "result" : "guessing"}
+              isCorrect={state.isCorrect ?? undefined}
+            />
           </div>
 
           {/* Action buttons */}

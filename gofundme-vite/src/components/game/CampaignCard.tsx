@@ -6,14 +6,12 @@ import ContentSection from './CampaignCard/ContentSection'
 
 interface CampaignCardProps {
   campaign: Campaign
-  animationClass: string
   phase: 'guessing' | 'result'
   isCorrect?: boolean
 }
 
 export default function CampaignCard({
   campaign,
-  animationClass,
   phase,
   isCorrect,
 }: CampaignCardProps) {
@@ -37,7 +35,7 @@ export default function CampaignCard({
 
   return (
     <div
-      className={`relative w-full h-full md:max-w-xl md:max-h-[800px] md:bg-gray-800 md:rounded-3xl overflow-hidden md:shadow-2xl flex flex-col md:border-4 md:border-white/20 ${animationClass}`}
+      className="relative w-full h-full md:max-w-xl md:max-h-[800px] md:bg-gray-800 md:rounded-3xl overflow-hidden md:shadow-2xl flex flex-col md:border-4 md:border-white/20"
     >
       {/* Image Section - full screen on mobile */}
       <div className="absolute inset-0 md:relative md:flex-1 md:min-h-0 bg-black">
