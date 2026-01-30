@@ -1,7 +1,7 @@
 import type { Campaign } from '../../data/campaigns'
-import { useState } from 'react'
-import { getPlaceholderImage } from '../../data/campaigns'
+import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { getCampaignImages, preloadAhead } from '../../utils/imagePreloader'
 import ContentSection from './CampaignCard/ContentSection'
 
 interface CampaignCardProps {
@@ -16,12 +16,13 @@ export default function CampaignCard({
   isCorrect,
 }: CampaignCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
-  const images = campaign.images && campaign.images.length > 0
-    ? campaign.images
-    : [campaign.imageUrl || getPlaceholderImage(campaign.id)]
-
+  const images = getCampaignImages(campaign)
   const hasMultipleImages = images.length > 1
+
+  // Swipe-ahead: preload the next 3 images whenever the user swipes
+  useEffect(() => {
+    preloadAhead(campaign, currentImageIndex, 3)
+  }, [campaign, currentImageIndex])
 
   const goToPrevImage = (e: React.MouseEvent) => {
     e.stopPropagation()

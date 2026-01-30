@@ -1,9 +1,9 @@
 import { useReducer, useEffect, useMemo, useState } from "react";
 import {
   getBalancedCampaigns,
-  getPlaceholderImage,
   type Campaign,
 } from "../data/campaigns";
+import { preloadFirstImages, preloadGallery } from "../utils/imagePreloader";
 import CampaignCard from "../components/game/CampaignCard";
 import ActionButtons from "../components/game/ActionButtons";
 import NavBar from "../components/NavBar";
@@ -45,33 +45,33 @@ const medicalDebtComparison = {
   ],
 };
 
-// Import america images for background
-import img1 from "../assets/america/1.jpg";
-import img2 from "../assets/america/2.jpg";
-import img3 from "../assets/america/3.jpg";
-import img4 from "../assets/america/4.jpg";
-import img5 from "../assets/america/5.jpg";
-import img6 from "../assets/america/6.jpg";
-import img7 from "../assets/america/7.jpg";
-import img8 from "../assets/america/8.jpg";
-import img9 from "../assets/america/9.jpg";
-import img10 from "../assets/america/10.jpg";
-import img11 from "../assets/america/11.jpg";
-import img12 from "../assets/america/12.jpg";
-import img13 from "../assets/america/13.jpg";
-import img14 from "../assets/america/14.jpg";
-import img15 from "../assets/america/15.jpg";
-import img16 from "../assets/america/16.jpg";
-import img17 from "../assets/america/17.jpg";
-import img18 from "../assets/america/18.jpg";
-import img19 from "../assets/america/19.jpg";
+// Import america images for background (WebP for fast loading)
+import img1 from "../assets/america/1.webp";
+import img2 from "../assets/america/2.webp";
+import img3 from "../assets/america/3.webp";
+import img4 from "../assets/america/4.webp";
+import img5 from "../assets/america/5.webp";
+import img6 from "../assets/america/6.webp";
+import img7 from "../assets/america/7.webp";
+import img8 from "../assets/america/8.webp";
+import img9 from "../assets/america/9.webp";
+import img10 from "../assets/america/10.webp";
+import img11 from "../assets/america/11.webp";
+import img12 from "../assets/america/12.webp";
+import img13 from "../assets/america/13.webp";
+import img14 from "../assets/america/14.webp";
+import img15 from "../assets/america/15.webp";
+import img16 from "../assets/america/16.webp";
+import img17 from "../assets/america/17.webp";
+import img18 from "../assets/america/18.webp";
+import img19 from "../assets/america/19.webp";
 import img20 from "../assets/america/20.webp";
-import img21 from "../assets/america/21.avif";
-import img22 from "../assets/america/22.avif";
+import img21 from "../assets/america/21.webp";
+import img22 from "../assets/america/22.webp";
 import img23 from "../assets/america/23.webp";
 import img24 from "../assets/america/24.webp";
-import img25 from "../assets/america/25.avif";
-import img26 from "../assets/america/26.jpg";
+import img25 from "../assets/america/25.webp";
+import img26 from "../assets/america/26.webp";
 
 const allImages = [
   img1,
@@ -284,18 +284,15 @@ export default function Game() {
 
   const currentCampaign = state.campaigns[state.currentIndex];
 
-  // Preload next 3 images
+  // Game init: preload the first image for every kid (8 requests)
   useEffect(() => {
-    const preloadCount = 3;
-    for (let i = 1; i <= preloadCount; i++) {
-      const nextIndex = state.currentIndex + i;
-      if (nextIndex < state.campaigns.length) {
-        const campaign = state.campaigns[nextIndex];
-        const img = new Image();
-        img.src = campaign.imageUrl || getPlaceholderImage(campaign.id);
-      }
-    }
-  }, [state.currentIndex, state.campaigns]);
+    preloadFirstImages(state.campaigns);
+  }, [state.campaigns]);
+
+  // Round start: preload first 4 gallery images for the current kid
+  useEffect(() => {
+    if (currentCampaign) preloadGallery(currentCampaign, 4);
+  }, [currentCampaign]);
 
   // No automatic phase transitions - user must click Next
 
