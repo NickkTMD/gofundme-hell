@@ -2,33 +2,33 @@ import { Link } from "react-router-dom";
 import { Play } from "lucide-react";
 import { useMemo } from "react";
 
-// Import all america images
-import img1 from "../assets/america/1.jpg";
-import img2 from "../assets/america/2.jpg";
-import img3 from "../assets/america/3.jpg";
-import img4 from "../assets/america/4.jpg";
-import img5 from "../assets/america/5.jpg";
-import img6 from "../assets/america/6.jpg";
-import img7 from "../assets/america/7.jpg";
-import img8 from "../assets/america/8.jpg";
-import img9 from "../assets/america/9.jpg";
-import img10 from "../assets/america/10.jpg";
-import img11 from "../assets/america/11.jpg";
-import img12 from "../assets/america/12.jpg";
-import img13 from "../assets/america/13.jpg";
-import img14 from "../assets/america/14.jpg";
-import img15 from "../assets/america/15.jpg";
-import img16 from "../assets/america/16.jpg";
-import img17 from "../assets/america/17.jpg";
-import img18 from "../assets/america/18.jpg";
-import img19 from "../assets/america/19.jpg";
+// Import all america images (WebP for fast loading)
+import img1 from "../assets/america/1.webp";
+import img2 from "../assets/america/2.webp";
+import img3 from "../assets/america/3.webp";
+import img4 from "../assets/america/4.webp";
+import img5 from "../assets/america/5.webp";
+import img6 from "../assets/america/6.webp";
+import img7 from "../assets/america/7.webp";
+import img8 from "../assets/america/8.webp";
+import img9 from "../assets/america/9.webp";
+import img10 from "../assets/america/10.webp";
+import img11 from "../assets/america/11.webp";
+import img12 from "../assets/america/12.webp";
+import img13 from "../assets/america/13.webp";
+import img14 from "../assets/america/14.webp";
+import img15 from "../assets/america/15.webp";
+import img16 from "../assets/america/16.webp";
+import img17 from "../assets/america/17.webp";
+import img18 from "../assets/america/18.webp";
+import img19 from "../assets/america/19.webp";
 import img20 from "../assets/america/20.webp";
-import img21 from "../assets/america/21.avif";
-import img22 from "../assets/america/22.avif";
+import img21 from "../assets/america/21.webp";
+import img22 from "../assets/america/22.webp";
 import img23 from "../assets/america/23.webp";
 import img24 from "../assets/america/24.webp";
-import img25 from "../assets/america/25.avif";
-import img26 from "../assets/america/26.jpg";
+import img25 from "../assets/america/25.webp";
+import img26 from "../assets/america/26.webp";
 
 const allImages = [
   img1,
@@ -108,7 +108,7 @@ export default function Home() {
           <div className="mb-0 flex justify-center">
             <div className="w-full max-w-[13rem] md:max-w-md aspect-square">
               <img
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Heal Or No Heal"
                 className="w-full h-full drop-shadow-lg"
               />
