@@ -145,11 +145,21 @@ for (const url of urls) {
         return Array.from(document.querySelectorAll('img[src*="d2g8igdw686xgo.cloudfront.net"]')).map((img) => (img as HTMLImageElement).src);
     });
 
-    const CLOUDFRONT_URL = "https://d2g8igdw686xgo.cloudfront.net";
-    const images = new Set([...cdnImages, ...cloudfrontImages].flatMap((img) => {
-        if (!img.includes(CLOUDFRONT_URL)) return [];
+    const rackcdnImages = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('img[src*="rackcdn.com"]')).map((img) => (img as HTMLImageElement).src);
+    });
 
-        return [CLOUDFRONT_URL + img.split(CLOUDFRONT_URL)[1]];
+    const CLOUDFRONT_URL = "https://d2g8igdw686xgo.cloudfront.net";
+    const RACKCDN_PATTERN = "rackcdn.com";
+    const allImgUrls = [...cdnImages, ...cloudfrontImages, ...rackcdnImages];
+    const images = new Set(allImgUrls.map((img) => {
+        if (img.includes("images.gofundme.com")) {
+            if (img.includes(CLOUDFRONT_URL)) return CLOUDFRONT_URL + img.split(CLOUDFRONT_URL)[1];
+            if (img.includes(RACKCDN_PATTERN)) return "https://" + img.split("https://")[2];
+            throw new Error(`Unknown image URL: ${img}`);
+        }
+
+        return img;
     }))
 
     const description = await page.evaluate(() => {
