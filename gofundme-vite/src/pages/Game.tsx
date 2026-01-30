@@ -3,10 +3,7 @@ import {
   getBalancedCampaigns,
   type Campaign,
 } from "../data/campaigns";
-import {
-  preloadInitialImages,
-  preloadUpcomingImages,
-} from "../utils/imagePreloader";
+import { preloadFirstImages, preloadGallery } from "../utils/imagePreloader";
 import CampaignCard from "../components/game/CampaignCard";
 import ActionButtons from "../components/game/ActionButtons";
 import NavBar from "../components/NavBar";
@@ -287,16 +284,15 @@ export default function Game() {
 
   const currentCampaign = state.campaigns[state.currentIndex];
 
-  // On game init: preload first 2 images per kid (16 images max for 8 campaigns)
+  // Game init: preload the first image for every kid (8 requests)
   useEffect(() => {
-    preloadInitialImages(state.campaigns, 2);
+    preloadFirstImages(state.campaigns);
   }, [state.campaigns]);
 
-  // As player advances: deep-load current kid's gallery (up to 8),
-  // peek first 2 images for next 3 kids
+  // Round start: preload first 4 gallery images for the current kid
   useEffect(() => {
-    preloadUpcomingImages(state.campaigns, state.currentIndex);
-  }, [state.currentIndex, state.campaigns]);
+    if (currentCampaign) preloadGallery(currentCampaign, 4);
+  }, [currentCampaign]);
 
   // No automatic phase transitions - user must click Next
 
