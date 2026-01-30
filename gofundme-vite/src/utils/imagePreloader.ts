@@ -20,30 +20,35 @@ function getCampaignImages(campaign: Campaign): string[] {
 }
 
 /**
- * Preloads the primary (first) image for every campaign in the list.
- * Call this once when the game's campaign list is determined.
+ * Preloads the first few images for every campaign in the list.
+ * Call once when the game's campaign list is determined so every card
+ * loads instantly and one gallery swipe is already cached.
  */
-export function preloadAllPrimaryImages(campaigns: Campaign[]): void {
+export function preloadInitialImages(campaigns: Campaign[], perCampaign = 2): void {
   campaigns.forEach((campaign) => {
     const images = getCampaignImages(campaign)
-    preloadImage(images[0])
+    images.slice(0, perCampaign).forEach((src) => preloadImage(src))
   })
 }
 
 /**
- * Preloads all gallery images for the next N campaigns from the current index.
- * Call this as the player advances through rounds so gallery images
- * are ready before the user swipes through them.
+ * Preloads images as the player advances through rounds:
+ *  - Current campaign: up to `galleryDepth` gallery images (default 8)
+ *  - Next `lookahead` campaigns: first `peekCount` images each
+ *
+ * This gives the active kid a deep gallery cache without blasting
+ * bandwidth on kids the player hasn't reached yet.
  */
-export function preloadUpcomingGalleryImages(
+export function preloadUpcomingImages(
   campaigns: Campaign[],
   currentIndex: number,
-  count = 3
+  { galleryDepth = 8, lookahead = 3, peekCount = 2 } = {}
 ): void {
-  for (let i = 0; i <= count; i++) {
+  for (let i = 0; i <= lookahead; i++) {
     const idx = currentIndex + i
     if (idx >= campaigns.length) break
     const images = getCampaignImages(campaigns[idx])
-    images.forEach((src) => preloadImage(src))
+    const limit = i === 0 ? galleryDepth : peekCount
+    images.slice(0, limit).forEach((src) => preloadImage(src))
   }
 }

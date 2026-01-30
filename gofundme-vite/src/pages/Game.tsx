@@ -4,8 +4,8 @@ import {
   type Campaign,
 } from "../data/campaigns";
 import {
-  preloadAllPrimaryImages,
-  preloadUpcomingGalleryImages,
+  preloadInitialImages,
+  preloadUpcomingImages,
 } from "../utils/imagePreloader";
 import CampaignCard from "../components/game/CampaignCard";
 import ActionButtons from "../components/game/ActionButtons";
@@ -287,14 +287,15 @@ export default function Game() {
 
   const currentCampaign = state.campaigns[state.currentIndex];
 
-  // Preload all primary images when campaigns are selected
+  // On game init: preload first 2 images per kid (16 images max for 8 campaigns)
   useEffect(() => {
-    preloadAllPrimaryImages(state.campaigns);
+    preloadInitialImages(state.campaigns, 2);
   }, [state.campaigns]);
 
-  // Preload all gallery images for current + next 3 campaigns as player advances
+  // As player advances: deep-load current kid's gallery (up to 8),
+  // peek first 2 images for next 3 kids
   useEffect(() => {
-    preloadUpcomingGalleryImages(state.campaigns, state.currentIndex, 3);
+    preloadUpcomingImages(state.campaigns, state.currentIndex);
   }, [state.currentIndex, state.campaigns]);
 
   // No automatic phase transitions - user must click Next
